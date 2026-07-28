@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>Counting Together</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#2F6B63">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Counting">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+  :root {
+    --bg: #EAEEE8;
+    --surface: #F7F9F5;
+    --surface-raised: #FFFFFF;
+    --ink: #262B24;
+    --ink-soft: #5B6158;
+    --accent: #2F6B63;
+    --accent-soft: #CFE7E1;
+    --accent-strong: #1B453F;
+    --group1: #C98A3E;
+    --group1-soft: #F0D9B5;
+    --group2: #B9789A;
+    --group2-soft: #F0D9E5;
+    --success: #4F8A52;
+    --success-soft: #DCEEDB;
+    --retry: #A98F72;
+    --retry-soft: #EFE6DB;
+    --border: rgba(38, 43, 36, 0.14);
+    --shadow: 0 1px 2px rgba(38, 43, 36, .06), 0 10px 28px rgba(38, 43, 36, .10);
+    --focus: #1B453F;
+    --font-display: ui-rounded, "SF Pro Rounded", "Segoe UI Rounded", system-ui, sans-serif;
+    --font-body: -apple-system, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101A16;
+      --surface: #172420;
+      --surface-raised: #1D2C27;
+      --ink: #E9F1EC;
+      --ink-soft: #9FB2A6;
+      --accent: #79D0C1;
+      --accent-soft: #1F3C37;
+      --accent-strong: #AEE7DA;
+      --group1: #E3A75C;
+      --group1-soft: #3C2F1C;
+      --group2: #D896B8;
+      --group2-soft: #3C2530;
+      --success: #84C782;
+      --success-soft: #20351F;
+      --retry: #C9AF8E;
+      --retry-soft: #372D20;
+      --border: rgba(233, 241, 236, .16);
+      --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 10px 28px rgba(0, 0, 0, .4);
+      --focus: #AEE7DA;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #101A16;
+    --surface: #172420;
+    --surface-raised: #1D2C27;
+    --ink: #E9F1EC;
+    --ink-soft: #9FB2A6;
+    --accent: #79D0C1;
+    --accent-soft: #1F3C37;
+    --accent-strong: #AEE7DA;
+    --group1: #E3A75C;
+    --group1-soft: #3C2F1C;
+    --group2: #D896B8;
+    --group2-soft: #3C2530;
+    --success: #84C782;
+    --success-soft: #20351F;
+    --retry: #C9AF8E;
+    --retry-soft: #372D20;
+    --border: rgba(233, 241, 236, .16);
+    --shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 10px 28px rgba(0, 0, 0, .4);
+    --focus: #AEE7DA;
+  }
+  :root[data-theme="light"] {
+    --bg: #EAEEE8;
+    --surface: #F7F9F5;
+    --surface-raised: #FFFFFF;
+    --ink: #262B24;
+    --ink-soft: #5B6158;
+    --accent: #2F6B63;
+    --accent-soft: #CFE7E1;
+    --accent-strong: #1B453F;
+    --group1: #C98A3E;
+    --group1-soft: #F0D9B5;
+    --group2: #B9789A;
+    --group2-soft: #F0D9E5;
+    --success: #4F8A52;
+    --success-soft: #DCEEDB;
+    --retry: #A98F72;
+    --retry-soft: #EFE6DB;
+    --border: rgba(38, 43, 36, 0.14);
+    --shadow: 0 1px 2px rgba(38, 43, 36, .06), 0 10px 28px rgba(38, 43, 36, .10);
+    --focus: #1B453F;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--bg);
+  }
+
+  body {
+    color: var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+  }
+
+  button:focus-visible,
+  a:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 20px 48px;
+  }
+
+  .screen {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  /* ---------- Home ---------- */
+
+  .home {
+    min-height: calc(100vh - 76px);
+    justify-content: center;
+    text-align: center;
+    gap: 28px;
+  }
+
+  .home h1 {
+    font-family: var(--font-display);
+    font-size: clamp(30px, 7vw, 40px);
+    font-weight: 800;
+    margin: 0;
+    text-wrap: balance;
+    color: var(--accent-strong);
+  }
+
+  .home p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 18px;
+    line-height: 1.5;
+  }
+
+  .big-button {
+    background: var(--accent);
+    color: var(--surface);
+    font-size: 22px;
+    font-weight: 700;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    transition: transform .15s ease;
+  }
+
+  .big-button:active {
+    transform: scale(0.97);
+  }
+
+  /* ---------- Lesson select ---------- */
+
+  .lesson-select h2 {
+    font-family: var(--font-display);
+    font-size: clamp(24px, 6vw, 30px);
+    margin: 0;
+    text-align: center;
+    color: var(--accent-strong);
+  }
+
+  .lesson-card {
+    background: var(--surface-raised);
+    border: 2px solid var(--border);
+    border-radius: 24px;
+    padding: 24px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: var(--shadow);
+    transition: transform .15s ease, border-color .15s ease;
+  }
+
+  .lesson-card:active {
+    transform: scale(0.98);
+  }
+
+  .lesson-card .name {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .lesson-card .desc {
+    color: var(--ink-soft);
+    font-size: 16px;
+  }
+
+  .lesson-card.tier-1 { border-left: 8px solid var(--accent); }
+  .lesson-card.tier-2 { border-left: 8px solid var(--accent-strong); }
+  .lesson-card.tier-3 { border-left: 8px solid var(--group2); }
+
+  /* ---------- Operation select ---------- */
+
+  .operation-select h2 {
+    font-family: var(--font-display);
+    font-size: clamp(22px, 5.5vw, 28px);
+    margin: 0;
+    text-align: center;
+    color: var(--accent-strong);
+    text-wrap: balance;
+  }
+
+  .operation-row {
+    display: flex;
+    gap: 14px;
+  }
+
+  .operation-card {
+    flex: 1;
+    background: var(--surface-raised);
+    border: 2px solid var(--border);
+    border-radius: 24px;
+    padding: 28px 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    box-shadow: var(--shadow);
+    transition: transform .15s ease;
+  }
+
+  .operation-card:active { transform: scale(0.96); }
+
+  .operation-card.add { border-bottom: 8px solid var(--group1); }
+  .operation-card.subtract { border-bottom: 8px solid var(--group2); }
+
+  .op-badge {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 40px;
+    font-weight: 800;
+    color: var(--surface);
+  }
+
+  .operation-card.add .op-badge { background: var(--group1); }
+  .operation-card.subtract .op-badge { background: var(--group2); }
+
+  .operation-card .name {
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .back-btn { align-self: flex-start; }
+
+  /* ---------- Lesson chrome (fixed, predictable) ---------- */
+
+  .lesson-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .chrome-btn {
+    background: var(--surface-raised);
+    color: var(--ink);
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 10px 16px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .progress {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .progress .step {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+
+  .progress .step.done { background: var(--accent); }
+  .progress .step.current {
+    background: var(--accent);
+    width: 22px;
+    border-radius: 6px;
+  }
+
+  /* ---------- Ten-frame ---------- */
+
+  .board {
+    background: var(--surface);
+    border-radius: 28px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+  }
+
+  .ten-frame {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .cell {
+    aspect-ratio: 1;
+    border-radius: 12px;
+    background: var(--surface-raised);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dot {
+    width: 68%;
+    height: 68%;
+    border-radius: 50%;
+    background: var(--group1);
+    border: 3px solid transparent;
+    transform: scale(0);
+    opacity: 0;
+    transition: transform .4s cubic-bezier(.34,1.56,.64,1), opacity .3s ease, background-color .3s ease, border-color .3s ease;
+  }
+
+  .dot.group2 { background: var(--group2); }
+  .dot.visible { transform: scale(1); opacity: 1; }
+  .dot.removed {
+    background: transparent;
+    border-color: var(--retry);
+    opacity: 0.8;
+  }
+
+  .ones-frames {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tens-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+
+  .rod {
+    display: flex;
+    gap: 3px;
+    width: 72px;
+    height: 24px;
+  }
+
+  .tick {
+    flex: 1;
+    border-radius: 5px;
+    background: var(--group1);
+    opacity: 0;
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform .35s cubic-bezier(.34,1.56,.64,1), opacity .3s ease, background-color .3s ease;
+  }
+
+  .tick.group2 { background: var(--group2); }
+  .tick.visible { transform: scaleY(1); opacity: 1; }
+
+  .place-caption {
+    text-align: center;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-bottom: 16px;
+  }
+
+  .board--large .ten-frame { gap: 12px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dot, .tick { transition: opacity .01s linear; }
+  }
+
+  /* ---------- Caption + equation ---------- */
+
+  .caption {
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 17px;
+    line-height: 1.5;
+    min-height: 1.5em;
+  }
+
+  .equation {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 14px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    font-size: clamp(44px, 13vw, 64px);
+    color: var(--ink);
+    min-height: 1.2em;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity .35s ease, transform .35s ease;
+  }
+
+  .equation.visible { opacity: 1; transform: translateY(0); }
+  .equation .op { color: var(--ink-soft); font-size: 0.7em; }
+  .equation .q { color: var(--accent); }
+
+  /* ---------- Answers ---------- */
+
+  .answers {
+    display: flex;
+    gap: 12px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity .35s ease, transform .35s ease;
+    pointer-events: none;
+  }
+
+  .answers.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+  .answer-btn {
+    flex: 1;
+    background: var(--surface-raised);
+    border: 2px solid var(--border);
+    border-radius: 18px;
+    padding: 18px 0;
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    transition: background-color .2s ease, border-color .2s ease, transform .15s ease;
+  }
+
+  .answer-btn:active { transform: scale(0.96); }
+  .answer-btn.correct { background: var(--success-soft); border-color: var(--success); color: var(--success); }
+  .answer-btn.retry { background: var(--retry-soft); border-color: var(--retry); color: var(--retry); }
+  .answer-btn[disabled] { pointer-events: none; }
+
+  .next-row { display: flex; justify-content: center; }
+
+  .next-btn {
+    background: var(--success);
+    color: var(--surface);
+    font-size: 19px;
+    font-weight: 700;
+    padding: 14px 36px;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  /* ---------- Lesson complete ---------- */
+
+  .complete {
+    text-align: center;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .badge {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: var(--success-soft);
+    border: 3px solid var(--success);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .badge .check {
+    width: 32px;
+    height: 18px;
+    border-left: 5px solid var(--success);
+    border-bottom: 5px solid var(--success);
+    transform: rotate(-45deg) translate(2px, -3px);
+  }
+
+  .complete h2 {
+    font-family: var(--font-display);
+    font-size: 26px;
+    margin: 0;
+    color: var(--accent-strong);
+  }
+</style>
+
+<div class="app" id="app"></div>
+
+<script>
+  const OPERATIONS = [
+    { id: 'add', label: 'Addition', symbol: '+' },
+    { id: 'subtract', label: 'Subtraction', symbol: '-' }
+  ];
+
+  const LEVELS = [
+    { id: 'add-1', operation: 'add', tier: 1, label: 'Level 1', description: 'Easy addition.' },
+    { id: 'add-2', operation: 'add', tier: 2, label: 'Level 2', description: 'Bigger numbers, tens and ones.' },
+    { id: 'add-3', operation: 'add', tier: 3, label: 'Level 3', description: 'Addition that needs to carry a ten.' },
+    { id: 'sub-1', operation: 'subtract', tier: 1, label: 'Level 1', description: 'Easy subtraction.' },
+    { id: 'sub-2', operation: 'subtract', tier: 2, label: 'Level 2', description: 'Bigger numbers, tens and ones.' },
+    { id: 'sub-3', operation: 'subtract', tier: 3, label: 'Level 3', description: 'Subtraction that needs to borrow a ten.' }
+  ];
+
+  const PRAISE = ["That's right.", "Correct.", "Well done.", "Yes, that's right."];
+  const SPEECH_RATE = 0.72;
+  const FEMALE_VOICE_HINTS = [
+    'female', 'samantha', 'victoria', 'karen', 'moira', 'tessa', 'fiona', 'susan',
+    'allison', 'ava', 'serena', 'zoe', 'kate', 'emma', 'joanna', 'salli', 'ivy',
+    'kendra', 'kimberly', 'amy', 'nicole', 'lisa', 'stephanie', 'elizabeth'
+  ];
+  const SPEECH_LANG = 'en-GB';
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let chosenVoice = null;
+  function pickVoice() {
+    if (!('speechSynthesis' in window)) return;
+    const voices = window.speechSynthesis.getVoices();
+    if (!voices.length) return;
+    const isBritish = (v) => v.lang && v.lang.toLowerCase().replace('_', '-').startsWith('en-gb');
+    const isFemale = (v) => FEMALE_VOICE_HINTS.some((hint) => v.name.toLowerCase().includes(hint));
+    chosenVoice = voices.find((v) => isBritish(v) && isFemale(v))
+      || voices.find((v) => isBritish(v))
+      || voices.find((v) => isFemale(v))
+      || voices.find((v) => v.lang && v.lang.toLowerCase().startsWith('en'))
+      || voices[0];
+  }
+  if ('speechSynthesis' in window) {
+    pickVoice();
+    window.speechSynthesis.onvoiceschanged = pickVoice;
+  }
+
+  let state = {
+    screen: 'home', operation: null, levelId: null, problemIndex: 0, problems: [], phase: 'presenting',
+    flashWrong: null, regroupStep: 0, needsReveal: false, captionText: ''
+  };
+
+  function speak(text, onEnd) {
+    if (!('speechSynthesis' in window)) { if (onEnd) onEnd(); return; }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = SPEECH_RATE;
+    utterance.pitch = 1.05;
+    utterance.lang = SPEECH_LANG;
+    if (chosenVoice) utterance.voice = chosenVoice;
+    if (onEnd) utterance.onend = onEnd;
+    else utterance.onend = null;
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function cancelSpeech() {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  }
+
+  function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function shuffle(list) {
+    const copy = list.slice();
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = copy[i]; copy[i] = copy[j]; copy[j] = tmp;
+    }
+    return copy;
+  }
+
+  function makeOptions(answer, maxBound) {
+    const pool = new Set([answer]);
+    const deltas = shuffle([-3, -2, -1, 1, 2, 3]);
+    let i = 0;
+    while (pool.size < 3 && i < deltas.length) {
+      const candidate = answer + deltas[i];
+      i += 1;
+      if (candidate >= 0 && candidate <= maxBound) pool.add(candidate);
+    }
+    let filler = 1;
+    while (pool.size < 3) {
+      const candidate = answer + filler;
+      if (candidate >= 0 && candidate <= maxBound && !pool.has(candidate)) pool.add(candidate);
+      filler += 1;
+    }
+    return shuffle(Array.from(pool));
+  }
+
+  function generateProblem(levelId) {
+    if (levelId === 'add-1') {
+      const a = randInt(1, 6);
+      const b = randInt(1, Math.max(1, 10 - a));
+      const answer = a + b;
+      return { kind: 'add', op: '+', twoDigit: false, a, b, answer, options: makeOptions(answer, 12) };
+    }
+
+    if (levelId === 'sub-1') {
+      const a = randInt(2, 10);
+      const b = randInt(1, a);
+      const answer = a - b;
+      return { kind: 'subtract', op: '-', twoDigit: false, a, b, answer, options: makeOptions(answer, 10) };
+    }
+
+    if (levelId === 'add-2') {
+      const tensA = randInt(1, 4);
+      const onesA = randInt(0, 9);
+      const tensB = randInt(1, Math.max(1, 8 - tensA));
+      const onesB = randInt(0, Math.max(0, 9 - onesA));
+      const a = tensA * 10 + onesA;
+      const b = tensB * 10 + onesB;
+      const answer = a + b;
+      return { kind: 'add', op: '+', twoDigit: true, a, b, answer, options: makeOptions(answer, 99) };
+    }
+
+    if (levelId === 'sub-2') {
+      const tensA = randInt(1, 4);
+      const onesA = randInt(1, 9);
+      const a = tensA * 10 + onesA;
+      const b = randInt(1, onesA);
+      const answer = a - b;
+      return { kind: 'subtract', op: '-', twoDigit: true, a, b, answer, options: makeOptions(answer, 99) };
+    }
+
+    if (levelId === 'sub-3') {
+      const tensA = randInt(1, 4);
+      const onesA = randInt(0, 8);
+      const b = randInt(onesA + 1, 9);
+      const a = tensA * 10 + onesA;
+      const answer = a - b;
+      return { kind: 'subtract', op: '-', twoDigit: true, needsBorrow: true, a, b, answer, options: makeOptions(answer, 99) };
+    }
+
+    // add-3: guarantee a carry by forcing onesA + onesB >= 10, and keeping tens
+    // small enough that the regrouped total stays a two-digit number.
+    const tensA = randInt(1, 4);
+    const onesA = randInt(1, 9);
+    const onesB = randInt(Math.max(1, 10 - onesA), 9);
+    const tensB = randInt(1, Math.max(1, 8 - tensA));
+    const a = tensA * 10 + onesA;
+    const b = tensB * 10 + onesB;
+    const answer = a + b;
+    return { kind: 'add', op: '+', twoDigit: true, needsCarry: true, a, b, answer, options: makeOptions(answer, 99) };
+  }
+
+  function currentLevel() {
+    return LEVELS.find((l) => l.id === state.levelId) || null;
+  }
+
+  function currentProblem() {
+    return state.problems[state.problemIndex] || null;
+  }
+
+  function describeText(problem) {
+    if (problem.kind === 'add') {
+      return `${problem.a} and ${problem.b} more. How many in all?`;
+    }
+    return `${problem.a}. Take away ${problem.b}. How many are left?`;
+  }
+
+  function el(tag, attrs, children) {
+    const node = document.createElement(tag);
+    attrs = attrs || {};
+    for (const key of Object.keys(attrs)) {
+      const value = attrs[key];
+      if (key === 'class') node.className = value;
+      else if (key.indexOf('on') === 0 && typeof value === 'function') node.addEventListener(key.slice(2), value);
+      else if (value !== null && value !== undefined) node.setAttribute(key, value);
+    }
+    (children || []).forEach((child) => {
+      if (child === null || child === undefined) return;
+      node.appendChild(typeof child === 'string' ? document.createTextNode(child) : child);
+    });
+    return node;
+  }
+
+  function goHome() {
+    cancelSpeech();
+    state = {
+      screen: 'home', operation: null, levelId: null, problemIndex: 0, problems: [], phase: 'presenting',
+      flashWrong: null, regroupStep: 0, needsReveal: false, captionText: ''
+    };
+    render();
+  }
+
+  function goOperationSelect() {
+    cancelSpeech();
+    state.screen = 'operationSelect';
+    render();
+  }
+
+  function chooseOperation(operationId) {
+    cancelSpeech();
+    state.operation = operationId;
+    state.screen = 'levelSelect';
+    render();
+  }
+
+  function goLevelSelect() {
+    cancelSpeech();
+    state.screen = 'levelSelect';
+    render();
+  }
+
+  function startLevel(id) {
+    cancelSpeech();
+    const problems = Array.from({ length: 10 }, () => generateProblem(id));
+    state = {
+      screen: 'lesson', operation: state.operation, levelId: id, problemIndex: 0, problems, phase: 'presenting',
+      flashWrong: null, regroupStep: 0, needsReveal: false, captionText: ''
+    };
+    render();
+    presentProblem();
+  }
+
+  function presentProblem() {
+    const problem = currentProblem();
+    state.phase = 'presenting';
+    state.regroupStep = 0;
+    state.flashWrong = null;
+    state.revealGroup = null;
+
+    if (problem.needsBorrow) {
+      const tensA = Math.floor(problem.a / 10);
+      const onesA = problem.a % 10;
+      const tensAfter = tensA - 1;
+      const onesAfter = onesA + 10;
+
+      state.needsReveal = true;
+      state.captionText = `${problem.a}. Take away ${problem.b}.`;
+      render();
+      state.needsReveal = false;
+
+      speak(state.captionText, () => {
+        state.captionText = "There are not enough ones. Let's open one ten.";
+        render();
+        speak(state.captionText, () => {
+          state.regroupStep = 1;
+          state.captionText = tensAfter > 0
+            ? `Now we have ${tensAfter} ${tensAfter === 1 ? 'ten' : 'tens'} and ${onesAfter} ones.`
+            : `Now we have ${onesAfter} ones.`;
+          render();
+          speak(state.captionText, () => {
+            state.captionText = `Take away ${problem.b}.`;
+            render();
+            speak(state.captionText, () => {
+              state.regroupStep = 2;
+              state.phase = 'answering';
+              state.captionText = `${problem.a}. Take away ${problem.b}. How many are left?`;
+              render();
+            });
+          });
+        });
+      });
+      return;
+    }
+
+    if (problem.needsCarry) {
+      const tensA = Math.floor(problem.a / 10);
+      const onesA = problem.a % 10;
+      const tensB = Math.floor(problem.b / 10);
+      const onesB = problem.b % 10;
+      const tensAfter = tensA + tensB + 1;
+      const onesAfter = onesA + onesB - 10;
+
+      state.needsReveal = true;
+      state.revealGroup = 1;
+      state.captionText = `${problem.a}.`;
+      render();
+      state.needsReveal = false;
+
+      speak(state.captionText, () => {
+        state.needsReveal = true;
+        state.revealGroup = 2;
+        state.captionText = `${problem.b} more.`;
+        render();
+        state.needsReveal = false;
+
+        speak(state.captionText, () => {
+          state.captionText = 'Ten ones make a new ten.';
+          render();
+          speak(state.captionText, () => {
+            state.regroupStep = 1;
+            state.captionText = `Now we have ${tensAfter} ${tensAfter === 1 ? 'ten' : 'tens'} and ${onesAfter} ${onesAfter === 1 ? 'one' : 'ones'}.`;
+            render();
+            speak(state.captionText, () => {
+              state.phase = 'answering';
+              state.captionText = `${problem.a} and ${problem.b} more. How many in all?`;
+              render();
+            });
+          });
+        });
+      });
+      return;
+    }
+
+    if (problem.kind === 'add') {
+      state.needsReveal = true;
+      state.revealGroup = 1;
+      state.captionText = `${problem.a}.`;
+      render();
+      state.needsReveal = false;
+
+      speak(state.captionText, () => {
+        state.needsReveal = true;
+        state.revealGroup = 2;
+        state.captionText = `${problem.b} more.`;
+        render();
+        state.needsReveal = false;
+
+        speak(state.captionText, () => {
+          state.phase = 'answering';
+          state.captionText = describeText(problem);
+          render();
+        });
+      });
+      return;
+    }
+
+    state.needsReveal = true;
+    state.captionText = describeText(problem);
+    render();
+    state.needsReveal = false;
+    speak(state.captionText, () => {
+      state.phase = 'answering';
+      render();
+    });
+  }
+
+  function replay() {
+    presentProblem();
+  }
+
+  function selectAnswer(value) {
+    const problem = currentProblem();
+    if (value === problem.answer) {
+      state.phase = 'correct';
+      render();
+      speak(PRAISE[Math.floor(Math.random() * PRAISE.length)]);
+    } else {
+      state.flashWrong = value;
+      render();
+      speak("Let's try again.", () => {
+        state.flashWrong = null;
+        render();
+      });
+    }
+  }
+
+  function nextProblem() {
+    cancelSpeech();
+    if (state.problemIndex + 1 < state.problems.length) {
+      state.problemIndex += 1;
+      presentProblem();
+    } else {
+      state.phase = 'lessonComplete';
+      render();
+      speak(`You finished ${currentLevel().label}.`);
+    }
+  }
+
+  function animateBoard() {
+    const problem = currentProblem();
+    const rods = Array.from(document.querySelectorAll('.rod'));
+    const dots = Array.from(document.querySelectorAll('.dot'));
+    if (!dots.length && !rods.length) return;
+
+    const rodStep = reduceMotion ? 0 : 220;
+    rods.forEach((rod, i) => {
+      setTimeout(() => {
+        rod.querySelectorAll('.tick').forEach((tick) => tick.classList.add('visible'));
+      }, i * rodStep);
+    });
+
+    const onesDelay = rods.length ? (reduceMotion ? 0 : rods.length * rodStep + 300) : 0;
+    const dotStep = reduceMotion ? 0 : 220;
+
+    // Borrow problems only ever reach animateBoard for their very first snapshot
+    // (the starting number, before any regrouping) -- never for removal, which is
+    // rendered settled directly once regroupStep advances. So just reveal, no removal.
+    if (problem.kind === 'add' || problem.needsBorrow) {
+      dots.forEach((dot, i) => {
+        setTimeout(() => dot.classList.add('visible'), onesDelay + i * dotStep);
+      });
+    } else {
+      const keep = dots.length - problem.b;
+      dots.forEach((dot, i) => {
+        setTimeout(() => dot.classList.add('visible'), onesDelay + (reduceMotion ? 0 : 60));
+        if (i >= keep) {
+          const removeDelay = onesDelay + (reduceMotion ? 30 : 900 + (i - keep) * 260);
+          setTimeout(() => dot.classList.add('removed'), removeDelay);
+        }
+      });
+    }
+  }
+
+  // Builds one or more stacked ten-frames so up to 19 ones can be shown at once --
+  // needed right after regrouping a ten into ten ones (a "double ten-frame",
+  // the standard manipulative for teen numbers).
+  function buildOnesFrames(onesTotal, onesGroup1Count, removedThreshold, settledCount) {
+    const frameCount = Math.max(1, Math.ceil(onesTotal / 10));
+    const frames = [];
+    for (let f = 0; f < frameCount; f++) {
+      const cells = [];
+      for (let i = 0; i < 10; i++) {
+        const idx = f * 10 + i;
+        let dot = null;
+        if (idx < onesTotal) {
+          const isGroup2 = idx >= onesGroup1Count;
+          let cls = 'dot' + (isGroup2 ? ' group2' : '');
+          if (idx < settledCount) {
+            cls += ' visible';
+            if (removedThreshold !== null && idx >= removedThreshold) cls += ' removed';
+          }
+          dot = el('div', { class: cls }, []);
+        }
+        cells.push(el('div', { class: 'cell' }, dot ? [dot] : []));
+      }
+      frames.push(el('div', { class: 'ten-frame' }, cells));
+    }
+    return el('div', { class: 'ones-frames' }, frames);
+  }
+
+  function renderBoard(problem) {
+    // Once we're past the initial reveal, any re-render (phase change, wrong-answer
+    // flash, next borrow stage, etc.) must show the fully settled board immediately --
+    // otherwise a fresh set of dots/ticks would be created with no 'visible' class
+    // and the whole board would go blank right when the student needs it to count.
+    const settled = !state.needsReveal;
+
+    let tensGroup1 = 0;
+    let tensGroup2 = 0;
+    let onesTotal;
+    let onesGroup1Count;
+    let removedThreshold = null;
+
+    if (problem.needsBorrow) {
+      const tensA = Math.floor(problem.a / 10);
+      const onesA = problem.a % 10;
+      if (state.regroupStep >= 1) {
+        tensGroup1 = tensA - 1;
+        onesTotal = onesA + 10;
+      } else {
+        tensGroup1 = tensA;
+        onesTotal = onesA;
+      }
+      onesGroup1Count = onesTotal;
+      if (state.regroupStep >= 2) removedThreshold = onesTotal - problem.b;
+    } else if (problem.needsCarry) {
+      const tensA = Math.floor(problem.a / 10);
+      const onesA = problem.a % 10;
+      const tensB = Math.floor(problem.b / 10);
+      const onesB = problem.b % 10;
+      if (state.regroupStep >= 1) {
+        tensGroup1 = tensA + tensB + 1;
+        onesTotal = onesA + onesB - 10;
+        onesGroup1Count = onesTotal;
+      } else {
+        const stage = state.revealGroup || 2;
+        onesGroup1Count = onesA;
+        tensGroup1 = tensA;
+        if (stage >= 2) {
+          tensGroup2 = tensB;
+          onesTotal = onesA + onesB;
+        } else {
+          tensGroup2 = 0;
+          onesTotal = onesA;
+        }
+      }
+    } else if (problem.twoDigit) {
+      const tensA = Math.floor(problem.a / 10);
+      const onesA = problem.a % 10;
+      if (problem.kind === 'add') {
+        const tensB = Math.floor(problem.b / 10);
+        const onesB = problem.b % 10;
+        const stage = state.revealGroup || 2;
+        onesGroup1Count = onesA;
+        tensGroup1 = tensA;
+        if (stage >= 2) {
+          tensGroup2 = tensB;
+          onesTotal = onesA + onesB;
+        } else {
+          tensGroup2 = 0;
+          onesTotal = onesA;
+        }
+      } else {
+        tensGroup1 = tensA;
+        onesTotal = onesA;
+        onesGroup1Count = onesA;
+        if (settled) removedThreshold = onesTotal - problem.b;
+      }
+    } else if (problem.kind === 'add') {
+      const stage = state.revealGroup || 2;
+      onesGroup1Count = problem.a;
+      onesTotal = stage >= 2 ? problem.a + problem.b : problem.a;
+    } else {
+      onesTotal = problem.a;
+      onesGroup1Count = problem.a;
+      if (settled) removedThreshold = onesTotal - problem.b;
+    }
+
+    // For a staged addition reveal, group 1 (already spoken/drawn in the previous
+    // step) should stay put while group 2 pops in -- so settledness is tracked
+    // per-item (by index) rather than as a single all-or-nothing board flag.
+    const isStagedAdd = problem.kind === 'add' && !problem.needsBorrow
+      && (!problem.needsCarry || state.regroupStep < 1);
+    const stage = state.revealGroup || 2;
+    const onesSettledCount = settled ? onesTotal : (isStagedAdd && stage >= 2 ? onesGroup1Count : 0);
+
+    const onesFrames = buildOnesFrames(onesTotal, onesGroup1Count, removedThreshold, onesSettledCount);
+
+    if (!problem.twoDigit) {
+      return el('div', { class: 'board' }, [onesFrames]);
+    }
+
+    const totalRods = tensGroup1 + tensGroup2;
+    const tensSettledCount = settled ? totalRods : (isStagedAdd && stage >= 2 ? tensGroup1 : 0);
+    const rods = [];
+    for (let i = 0; i < totalRods; i++) {
+      const isGroup2 = i >= tensGroup1;
+      const rodVisible = i < tensSettledCount;
+      const ticks = [];
+      for (let t = 0; t < 10; t++) {
+        ticks.push(el('div', { class: 'tick' + (isGroup2 ? ' group2' : '') + (rodVisible ? ' visible' : '') }, []));
+      }
+      rods.push(el('div', { class: 'rod' }, ticks));
+    }
+    const tensRow = el('div', { class: 'tens-row' }, rods);
+    const captionText = totalRods === 0
+      ? `${onesTotal} ${onesTotal === 1 ? 'one' : 'ones'}`
+      : `${totalRods} ${totalRods === 1 ? 'ten' : 'tens'} and ${onesTotal} ${onesTotal === 1 ? 'one' : 'ones'}`;
+    const caption = el('div', { class: 'place-caption' }, [captionText]);
+
+    return el('div', { class: 'board board--large' }, [tensRow, caption, onesFrames]);
+  }
+
+  function renderEquation(problem) {
+    const parts = [
+      el('span', {}, [String(problem.a)]),
+      el('span', { class: 'op' }, [problem.op]),
+      el('span', {}, [String(problem.b)]),
+      el('span', { class: 'op' }, ['=']),
+      el('span', { class: 'q' }, ['?'])
+    ];
+    return el('div', { class: 'equation visible' }, parts);
+  }
+
+  function renderProgress() {
+    const total = state.problems.length;
+    const steps = state.problems.map((_, i) => {
+      let cls = 'step';
+      if (i < state.problemIndex) cls += ' done';
+      if (i === state.problemIndex) cls += ' current';
+      return el('div', { class: cls }, []);
+    });
+    return el('div', {
+      class: 'progress',
+      role: 'img',
+      'aria-label': `Question ${state.problemIndex + 1} of ${total}`
+    }, steps);
+  }
+
+  function renderLessonScreen() {
+    if (state.phase === 'lessonComplete') {
+      return el('div', { class: 'screen complete' }, [
+        el('div', { class: 'badge' }, [el('div', { class: 'check' }, [])]),
+        el('h2', {}, [`You finished ${currentLevel().label}.`]),
+        el('button', { class: 'big-button', onclick: goLevelSelect }, ['Back to Levels'])
+      ]);
+    }
+
+    const problem = currentProblem();
+    const answering = state.phase === 'answering' || state.phase === 'correct';
+
+    const bar = el('div', { class: 'lesson-bar' }, [
+      el('button', { class: 'chrome-btn', onclick: goLevelSelect }, ['Levels']),
+      el('button', { class: 'chrome-btn', onclick: replay }, ['Play Sound Again'])
+    ]);
+
+    const caption = el('div', { class: 'caption' }, [state.captionText || describeText(problem)]);
+
+    const answerButtons = problem.options.map((opt) => {
+      let cls = 'answer-btn';
+      if (state.phase === 'correct' && opt === problem.answer) cls += ' correct';
+      if (state.flashWrong === opt) cls += ' retry';
+      return el('button', {
+        class: cls,
+        disabled: state.phase === 'correct' ? 'true' : null,
+        onclick: () => selectAnswer(opt)
+      }, [String(opt)]);
+    });
+
+    const children = [
+      bar,
+      renderProgress(),
+      renderBoard(problem),
+      renderEquation(problem),
+      caption,
+      el('div', { class: 'answers' + (answering ? ' visible' : '') }, answerButtons)
+    ];
+
+    if (state.phase === 'correct') {
+      children.push(el('div', { class: 'next-row' }, [
+        el('button', { class: 'next-btn', onclick: nextProblem }, ['Next'])
+      ]));
+    }
+
+    return el('div', { class: 'screen' }, children);
+  }
+
+  function renderHome() {
+    return el('div', { class: 'screen home' }, [
+      el('h1', {}, ['Counting Together']),
+      el('p', {}, ['Learn addition and subtraction one step at a time.']),
+      el('button', {
+        class: 'big-button',
+        onclick: () => {
+          speak('Counting Together.');
+          state.screen = 'operationSelect';
+          render();
+        }
+      }, ['Start'])
+    ]);
+  }
+
+  function renderOperationSelect() {
+    const cards = OPERATIONS.map((op) => el('button', {
+      class: 'operation-card ' + op.id,
+      onclick: () => chooseOperation(op.id)
+    }, [
+      el('div', { class: 'op-badge' }, [op.symbol]),
+      el('div', { class: 'name' }, [op.label])
+    ]));
+
+    return el('div', { class: 'screen operation-select' }, [
+      el('h2', {}, ['What would you like to practice?']),
+      el('div', { class: 'operation-row' }, cards)
+    ]);
+  }
+
+  function renderLevelSelect() {
+    const levels = LEVELS.filter((level) => level.operation === state.operation);
+    const cards = levels.map((level) => el('button', {
+      class: 'lesson-card tier-' + level.tier,
+      onclick: () => startLevel(level.id)
+    }, [
+      el('div', { class: 'name' }, [level.label]),
+      el('div', { class: 'desc' }, [level.description])
+    ]));
+
+    return el('div', { class: 'screen lesson-select' }, [
+      el('button', { class: 'chrome-btn back-btn', onclick: goOperationSelect }, ['< Back']),
+      el('h2', {}, ['Choose a Level'])
+    ].concat(cards));
+  }
+
+  function render() {
+    const app = document.getElementById('app');
+    app.innerHTML = '';
+    let screenEl;
+    if (state.screen === 'home') screenEl = renderHome();
+    else if (state.screen === 'operationSelect') screenEl = renderOperationSelect();
+    else if (state.screen === 'levelSelect') screenEl = renderLevelSelect();
+    else screenEl = renderLessonScreen();
+    app.appendChild(screenEl);
+
+    if (state.screen === 'lesson' && state.needsReveal) {
+      requestAnimationFrame(animateBoard);
+    }
+  }
+
+  render();
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+</script>
