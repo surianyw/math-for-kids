@@ -762,11 +762,6 @@
     state.revealGroup = null;
 
     if (problem.needsBorrow) {
-      const tensA = Math.floor(problem.a / 10);
-      const onesA = problem.a % 10;
-      const tensAfter = tensA - 1;
-      const onesAfter = onesA + 10;
-
       state.needsReveal = true;
       state.captionText = `${problem.a}. Take away ${problem.b}.`;
       render();
@@ -777,9 +772,7 @@
         render();
         speak(state.captionText, () => {
           state.regroupStep = 1;
-          state.captionText = tensAfter > 0
-            ? `Now we have ${tensAfter} ${tensAfter === 1 ? 'ten' : 'tens'} and ${onesAfter} ones.`
-            : `Now we have ${onesAfter} ones.`;
+          state.captionText = 'Now we have how many tens and how many ones?';
           render();
           speak(state.captionText, () => {
             state.captionText = `Take away ${problem.b}.`;
@@ -797,13 +790,6 @@
     }
 
     if (problem.needsCarry) {
-      const tensA = Math.floor(problem.a / 10);
-      const onesA = problem.a % 10;
-      const tensB = Math.floor(problem.b / 10);
-      const onesB = problem.b % 10;
-      const tensAfter = tensA + tensB + 1;
-      const onesAfter = onesA + onesB - 10;
-
       state.needsReveal = true;
       state.revealGroup = 1;
       state.captionText = `${problem.a}.`;
@@ -822,7 +808,7 @@
           render();
           speak(state.captionText, () => {
             state.regroupStep = 1;
-            state.captionText = `Now we have ${tensAfter} ${tensAfter === 1 ? 'ten' : 'tens'} and ${onesAfter} ${onesAfter === 1 ? 'one' : 'ones'}.`;
+            state.captionText = 'Now we have how many tens and how many ones?';
             render();
             speak(state.captionText, () => {
               state.phase = 'answering';
