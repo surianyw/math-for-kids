@@ -1,6 +1,6 @@
 {
   "name": "Counting Together",
-  "short_name": "Counting",
+  "short_name": "Counting Together",
   "description": "Learn addition and subtraction one step at a time.",
   "start_url": "./index.html",
   "scope": "./",
